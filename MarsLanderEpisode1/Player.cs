@@ -12,6 +12,7 @@ using System.Numerics;
  **/
 class Player
 {
+    
 	static void Main(string[] args)
 	{
 
@@ -48,25 +49,24 @@ class Player
             int rotate = int.Parse(inputs[5]); // the rotation angle in degrees (-90 to 90).
             int power = int.Parse(inputs[6]); // the thrust power (0 to 4).
 
+            mLander.MarsLanderNewData(X, Y, hSpeed, vSpeed, rotate, power);
+
             // Write an action using Console.WriteLine()
             // To debug: Console.Error.WriteLine("Debug messages...");
-            if(!closestLandingSurfaceChecked)
-                
+            if(!closestLandingSurfaceChecked){
+                mLander.CheckClosestSurfaceForLander(allPairsOfStraightPoints);
+                closestLandingSurfaceChecked = true;
+            }
 
-            if (vSpeed > -40){
-				// 2 integers: rotate power. rotate is the desired rotation angle (should be 0 for level 1), power is the desired thrust power (0 to 4).
-				Console.WriteLine("0 0");
-			}
-            else{
-				Console.WriteLine("0 4");
-			}
+            Console.WriteLine(mLander.LanderNextMove());
+
 		}
 
 	}
 
     class MarsLander{
-        SurfacePoint startPoint;
-        SurfacePoint endingPoint;
+        SurfacePoint leftSidePoint;
+        SurfacePoint rightSidePoint;
         SurfacePoint currentPoint;
         int _hSpeed;
         int _vSpeed;
@@ -75,7 +75,7 @@ class Player
         int _power;
 
         public MarsLander(){
-            
+            this.currentPoint = new SurfacePoint(0, 0);
         }
 
         public void MarsLanderNewData(int positionX, int positionY, int hSpeed, int vSpeed, int rotate, int power){
@@ -86,17 +86,70 @@ class Player
             this._power = power;
         }
 
-        public string LanderNextMove(){
-            
-            return "0 0";
+        public void CheckClosestSurfaceForLander(List<SurfacePoint> allSurfaces){
+            //Check 0-1, 1-2, 2-3 surfaces
+            float closestDistance = allSurfaces[0].ClosestDistanceTo(currentPoint);
+			leftSidePoint = allSurfaces[0];
+			rightSidePoint = allSurfaces[1];
+            for (int cur = 0; cur < (allSurfaces.Count()-2); cur += 2){
+                if (closestDistance < allSurfaces[cur].ClosestDistanceTo(currentPoint))
+                {
+                    closestDistance = allSurfaces[cur].ClosestDistanceTo(currentPoint);
+                    leftSidePoint = allSurfaces[cur];
+                    rightSidePoint = allSurfaces[cur + 1]; // TODO: Check here for eventualy mistakes
+                }
+            }
+
         }
+
+        public string LanderNextMove(){
+            string nextMove = "0 0";
+            RelativePosition currently = currentPoint.RelativePosition(leftSidePoint, rightSidePoint);
+            switch (currently){
+                case RelativePosition.Between:
+                    nextMove = MoveDown();
+                    break;
+                case RelativePosition.Left:
+                    nextMove = MoveRight();
+                    break;
+                case RelativePosition.Right:
+                    nextMove = MoveLeft();
+                    break;
+            }
+
+            return nextMove;
+        }
+
+        private string MoveDown()
+        {
+            int power;
+
+            return "";
+        }
+        
+        private string MoveRight()
+        {
+            int rotate;
+            int power;
+
+            return "";
+        }
+
+		private string MoveLeft()
+		{
+            int rotate;
+            int power;
+
+            return "";
+		}
+
     }
+
+    public enum RelativePosition { Left, Between, Right}
 
     class SurfacePoint{
         int _x;
         int _y;
-
-        //static HashSet<KeyValuePair<SurfacePoints, SurfacePoints>> allStraightSurfaces = new HashSet<KeyValuePair<SurfacePoints, SurfacePoints>>(); 
 
         public SurfacePoint(int landX, int landY){
             this._x = landX;
@@ -108,13 +161,21 @@ class Player
             return isStraight;
         }
 
-        public float ClosestPosition(SurfacePoint ladderPoint){
+        public float ClosestDistanceTo(SurfacePoint ladderPoint){
             float powOfX = MathF.Pow((this._x - ladderPoint._x), 2);
             float powOfY = MathF.Pow((this._y - ladderPoint._y), 2);
             float distance = MathF.Sqrt(powOfX + powOfY);
 
             return distance;
+        }
 
+        public RelativePosition RelativePosition(SurfacePoint leftSide, SurfacePoint rightSide){
+            if (this._y > leftSide._y && this._y < rightSide._y)
+                return Player.RelativePosition.Between;
+            else if (this._y <= leftSide._y)
+                return Player.RelativePosition.Left;
+            else
+                return Player.RelativePosition.Right;
         }
     }
 }

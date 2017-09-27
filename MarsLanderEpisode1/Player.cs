@@ -141,13 +141,13 @@ class Player
 		private int StabilizeRotate(int hSpeed)
 		{
 			int rotate = 0;
-            if (_rotate == 0 && Math.Abs(hSpeed) == 0)
+            if (_rotate == 0 && Math.Abs(hSpeed) < 5)
 				return rotate;
 
 			if (hSpeed > 0)
-				rotate = 90;
+				rotate = 45;
 			else if (hSpeed < 0)
-				rotate = -90;
+				rotate = -45;
 			else
 				rotate = 0;
 
@@ -157,59 +157,40 @@ class Player
 		private int SetPower(int vSpeed, double distanceToLand)
 		{
 			int power;
-			if (Math.Abs(distanceToLand) > 2000)
-				power = 0;
+			if (Math.Abs(vSpeed) >= 40)
+				power = 4;
 			else
-			{
-				if (Math.Abs(vSpeed) >= 40)
-					power = 4;
-				else
-					power = 0;
-			}
-
+				power = 2;
 
 			return power;
 		}
 
         private string MoveRight()
         {
-            int rotate = 45;
+            int rotate = 35;
+            int power = 4;
             double distanceToLand = currentPoint.ToLand(leftSidePoint);
-            if (distanceToLand < 2000) {
-                if (_hSpeed > 30)
-                    rotate = 15;
-                else
-                    rotate = -15;
-            }
-
-			int power;
-			//if (_rotate < 90)
-			//	power = 2;
-			//else
-				power = 4;
-
-
+            if (_hSpeed < -20)
+            {
+				rotate = 0;
+				if (distanceToLand > 2000)
+					power = 3;
+			}
 
 			return rotate + " " + power;
 		}
 
 		private string MoveLeft()
 		{
-			int rotate = -45;
+			int rotate = -35;
+            int power = 4;
 			double distanceToLand = currentPoint.ToLand(leftSidePoint);
-			if (distanceToLand < 2000)
-			{
-				if (_hSpeed < -30)
-					rotate = -15;
-				else
-					rotate = 15;
-			}
-
-			int power;
-			//if (_rotate < 90)
-			//  power = 2;
-			//else
-			power = 4;
+            if (_hSpeed > 20)
+            {
+                rotate = 0;
+                if (distanceToLand > 2000)
+                    power = 3;
+            }
 
 			return rotate + " " + power;
 		}

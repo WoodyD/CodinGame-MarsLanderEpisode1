@@ -132,6 +132,7 @@ class Player
 
 		private string MoveDown()
 		{
+			Console.Error.WriteLine("Move down");
 			double distanceToLand = currentPoint.ToLand(leftSidePoint);
 			int power = SetPower(_vSpeed, distanceToLand);
 			int rotate = StabilizeRotate(_hSpeed);
@@ -141,7 +142,7 @@ class Player
 		private int StabilizeRotate(int hSpeed)
 		{
 			int rotate = 0;
-            if (_rotate == 0 && Math.Abs(hSpeed) < 5)
+			if (_rotate == 0 && Math.Abs(hSpeed) < 10)
 				return rotate;
 
 			if (hSpeed > 0)
@@ -157,40 +158,63 @@ class Player
 		private int SetPower(int vSpeed, double distanceToLand)
 		{
 			int power;
-			if (Math.Abs(vSpeed) >= 40)
+			if (Math.Abs(vSpeed) <= 20)
 				power = 4;
 			else
-				power = 2;
+				power = 4;
 
 			return power;
 		}
 
-        private string MoveRight()
-        {
-            int rotate = 35;
-            int power = 4;
-            double distanceToLand = currentPoint.ToLand(leftSidePoint);
-            if (_hSpeed < -20)
-            {
+		private string MoveRight()
+		{
+			Console.Error.WriteLine("Move right");
+			int rotate = 35;
+			int power = 4;
+			int distanceToLand = currentPoint.ToLand(leftSidePoint);
+			int distanceToScy = currentPoint.ToScy();
+			if (_hSpeed < -20)
+			{
 				rotate = 0;
 				if (distanceToLand > 2000)
 					power = 3;
 			}
+
+			if (_hSpeed < -40)
+			{
+				rotate = -35;
+				power = 4;
+			}
+
+			if (distanceToScy < 200)
+				power = 3;
 
 			return rotate + " " + power;
 		}
 
 		private string MoveLeft()
 		{
+			Console.Error.WriteLine("Move left");
 			int rotate = -35;
-            int power = 4;
-			double distanceToLand = currentPoint.ToLand(leftSidePoint);
-            if (_hSpeed > 20)
-            {
-                rotate = 0;
-                if (distanceToLand > 2000)
-                    power = 3;
-            }
+			int power = 4;
+			int distanceToLand = currentPoint.ToLand(leftSidePoint);
+			int distanceToScy = currentPoint.ToScy();
+
+			if (_hSpeed > 20)
+			{
+				rotate = 0;
+				if (distanceToLand > 2000)
+					power = 3;
+			}
+
+			if (_hSpeed > 40)
+			{
+				rotate = 35;
+				power = 4;
+			}
+
+			if (distanceToScy < 200)
+				power = 3;
 
 			return rotate + " " + power;
 		}
@@ -239,6 +263,12 @@ class Player
 		{
 			int distanceToLand = this._y - landPoint._y;
 			return distanceToLand;
+		}
+
+		internal int ToScy()
+		{
+			int distance = 3000 - this._y;
+			return distance;
 		}
 	}
 }

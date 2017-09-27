@@ -158,8 +158,8 @@ class Player
 		private int SetPower(int vSpeed, double distanceToLand)
 		{
 			int power;
-			if (Math.Abs(vSpeed) <= 20)
-				power = 4;
+			if (Math.Abs(vSpeed) <= 5)
+				power = 3;
 			else
 				power = 4;
 
@@ -251,7 +251,7 @@ class Player
 
 		public RelativePosition RelativePosition(SurfacePoint leftSide, SurfacePoint rightSide)
 		{
-			if (this._x > leftSide._x && this._x < rightSide._x)
+            if (this._x > (leftSide._x) && (this._x < rightSide._x))
 				return Player.RelativePosition.Between;
 			else if (this._x >= leftSide._x)
 				return Player.RelativePosition.Left;
